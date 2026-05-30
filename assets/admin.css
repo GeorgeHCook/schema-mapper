@@ -55,3 +55,50 @@
 .schema-mapper-field-row[data-source="static"] .schema-mapper-static-value { display: inline-block; min-width: 240px; }
 .schema-mapper-field-row[data-source="permalink"] .schema-mapper-acf-key,
 .schema-mapper-field-row[data-source="permalink"] .schema-mapper-static-value { display: none; }
+
+/* ------------------------------------------------------------------------
+ * Post-edit metabox: schema preview
+ * --------------------------------------------------------------------- */
+.schema-mapper-preview { font-size: 13px; }
+
+.schema-mapper-status { padding: 8px 12px; border-radius: 4px; margin: 0 0 12px; }
+.schema-mapper-status.is-ok      { background: #edfaef; border-left: 4px solid #00a32a; }
+.schema-mapper-status.is-blocked { background: #fff8e5; border-left: 4px solid #dba617; }
+.schema-mapper-status.is-warn    { background: #fcf0f1; border-left: 4px solid #d63638; }
+
+.schema-mapper-gate { background: #f6f7f7; padding: 6px 10px; border-radius: 3px; margin: 0 0 12px; }
+.schema-mapper-gate .dashicons-yes { color: #00a32a; }
+.schema-mapper-gate .dashicons-no  { color: #d63638; }
+
+table.schema-mapper-fields-table { margin-top: 8px; }
+table.schema-mapper-fields-table th,
+table.schema-mapper-fields-table td {
+	padding: 8px 10px;
+	vertical-align: top;
+}
+table.schema-mapper-fields-table th { text-align: left; background: #f6f7f7; font-weight: 600; }
+table.schema-mapper-fields-table tr:nth-child(even) td { background: #fafafa; }
+table.schema-mapper-fields-table tr.is-missing-required td { background: #fcf0f1; }
+
+.schema-mapper-fields-table .schema-mapper-source code { font-size: 11px; background: #f0f0f1; padding: 1px 5px; border-radius: 2px; }
+.schema-mapper-fields-table .schema-mapper-muted { color: #757575; }
+.schema-mapper-fields-table .schema-mapper-required { color: #d63638; }
+
+.schema-mapper-value-cell pre { margin: 4px 0 0; }
+
+.schema-mapper-payload {
+	background: #1d2327;
+	color: #f0f0f1;
+	padding: 12px 14px;
+	border-radius: 4px;
+	overflow: auto;
+	max-height: 360px;
+	font-size: 12px;
+	line-height: 1.45;
+	white-space: pre;
+}
+.schema-mapper-payload-inline {
+	max-height: 200px;
+	font-size: 11px;
+}
+

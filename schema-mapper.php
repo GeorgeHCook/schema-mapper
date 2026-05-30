@@ -28,6 +28,7 @@ require_once SCHEMA_MAPPER_DIR . 'includes/class-acf-helper.php';
 require_once SCHEMA_MAPPER_DIR . 'includes/class-field-resolver.php';
 require_once SCHEMA_MAPPER_DIR . 'includes/class-renderer.php';
 require_once SCHEMA_MAPPER_DIR . 'includes/class-settings.php';
+require_once SCHEMA_MAPPER_DIR . 'includes/class-metabox.php';
 require_once SCHEMA_MAPPER_DIR . 'includes/schemas/class-schema-type.php';
 require_once SCHEMA_MAPPER_DIR . 'includes/schemas/class-jobposting-schema.php';
 

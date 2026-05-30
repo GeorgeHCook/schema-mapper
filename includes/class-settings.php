@@ -48,11 +48,15 @@ class Schema_Mapper_Settings {
 	}
 
 	public function enqueue_assets( $hook ) {
-		if ( false === strpos( (string) $hook, self::PAGE_SLUG ) ) {
+		$is_settings_page = false !== strpos( (string) $hook, self::PAGE_SLUG );
+		$is_post_edit     = in_array( $hook, array( 'post.php', 'post-new.php' ), true );
+		if ( ! $is_settings_page && ! $is_post_edit ) {
 			return;
 		}
 		wp_enqueue_style( 'schema-mapper-admin', SCHEMA_MAPPER_URL . 'assets/admin.css', array(), SCHEMA_MAPPER_VERSION );
-		wp_enqueue_script( 'schema-mapper-admin', SCHEMA_MAPPER_URL . 'assets/admin.js', array(), SCHEMA_MAPPER_VERSION, true );
+		if ( $is_settings_page ) {
+			wp_enqueue_script( 'schema-mapper-admin', SCHEMA_MAPPER_URL . 'assets/admin.js', array(), SCHEMA_MAPPER_VERSION, true );
+		}
 	}
 
 	public function render_page() {

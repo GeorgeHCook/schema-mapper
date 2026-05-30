@@ -37,7 +37,7 @@ class Schema_Mapper_Renderer {
 			return;
 		}
 
-		$resolved = $this->resolve_fields( $handler, $mapping, $post_id );
+		$resolved = self::resolve_fields( $handler, $mapping, $post_id );
 		$payload  = $handler->build( $post_id, $mapping, $resolved );
 		if ( ! is_array( $payload ) || empty( $payload ) ) {
 			return;
@@ -60,9 +60,12 @@ class Schema_Mapper_Renderer {
 	/**
 	 * Resolve every declared field for the schema, applying the configured transform.
 	 *
+	 * Public so the admin preview metabox can reuse the same resolution logic
+	 * the renderer would actually run on the front end.
+	 *
 	 * @return array<string,mixed>
 	 */
-	private function resolve_fields( Schema_Mapper_Type $handler, array $mapping, $post_id ) {
+	public static function resolve_fields( Schema_Mapper_Type $handler, array $mapping, $post_id ) {
 		$fields     = $handler->fields();
 		$transforms = $handler->transforms();
 		$mappings   = $mapping['fields'] ?? array();
