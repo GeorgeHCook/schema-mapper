@@ -53,10 +53,30 @@ class Schema_Mapper_JobPosting extends Schema_Mapper_Type {
 				'transform'   => 'employment_type_map',
 			),
 			'baseSalary' => array(
-				'label'       => __( 'baseSalary', 'schema-mapper' ),
+				'label'       => __( 'baseSalary (legacy single field)', 'schema-mapper' ),
 				'required'    => false,
-				'description' => __( 'Salary. Use gbp_salary_range to parse strings like "£20,000-£30,000".', 'schema-mapper' ),
+				'description' => __( 'Salary as a single string field. Use gbp_salary_range to parse "£20,000-£30,000". If baseSalary_min or baseSalary_max are mapped, those win.', 'schema-mapper' ),
 				'transform'   => 'gbp_salary_range',
+			),
+			'baseSalary_min' => array(
+				'label'       => __( 'baseSalary.minValue (numeric)', 'schema-mapper' ),
+				'required'    => false,
+				'description' => __( 'Lower bound of the salary range, as a number. Pair with baseSalary_max.', 'schema-mapper' ),
+			),
+			'baseSalary_max' => array(
+				'label'       => __( 'baseSalary.maxValue (numeric)', 'schema-mapper' ),
+				'required'    => false,
+				'description' => __( 'Upper bound of the salary range, as a number. Pair with baseSalary_min.', 'schema-mapper' ),
+			),
+			'baseSalary_currency' => array(
+				'label'       => __( 'baseSalary.currency', 'schema-mapper' ),
+				'required'    => false,
+				'description' => __( 'ISO 4217 currency code. Defaults to "GBP" when unmapped.', 'schema-mapper' ),
+			),
+			'jobBenefits' => array(
+				'label'       => __( 'jobBenefits', 'schema-mapper' ),
+				'required'    => false,
+				'description' => __( 'Benefits beyond the base salary (commission, bonus, etc.). Surfaces in Google for Jobs alongside the salary.', 'schema-mapper' ),
 			),
 			'jobLocation_locality' => array(
 				'label'       => __( 'jobLocation.addressLocality', 'schema-mapper' ),
@@ -202,7 +222,11 @@ class Schema_Mapper_JobPosting extends Schema_Mapper_Type {
 		);
 
 		if ( $valid_through )                            $schema['validThrough']    = $valid_through;
-		if ( ! empty( $resolved['baseSalary'] ) )       $schema['baseSalary']      = $resolved['baseSalary'];
+
+		// baseSalary: prefer min/max fields, fall back to the legacy single field.
+		$base_salary = self::compose_base_salary( $resolved );
+		if ( $base_salary )                              $schema['baseSalary']      = $base_salary;
+		if ( ! empty( $resolved['jobBenefits'] ) )       $schema['jobBenefits']     = $resolved['jobBenefits'];
 		if ( ! empty( $resolved['jobLocationType'] ) ) {
 			$schema['jobLocationType']                = $resolved['jobLocationType'];
 			if ( 'TELECOMMUTE' === $resolved['jobLocationType'] ) {
@@ -220,6 +244,56 @@ class Schema_Mapper_JobPosting extends Schema_Mapper_Type {
 	// ------------------------------------------------------------------------
 	// Transforms
 	// ------------------------------------------------------------------------
+
+	/**
+	 * Build a MonetaryAmount from the resolved fields.
+	 *
+	 * Priority:
+	 *   1. baseSalary_min / baseSalary_max numeric fields (preferred)
+	 *   2. baseSalary single field (already a MonetaryAmount via gbp_salary_range transform)
+	 *
+	 * Returns null when no salary data is available.
+	 *
+	 * @param array $resolved
+	 * @return array|null
+	 */
+	public static function compose_base_salary( array $resolved ) {
+		$min      = isset( $resolved['baseSalary_min'] ) && is_numeric( $resolved['baseSalary_min'] ) ? (float) $resolved['baseSalary_min'] : null;
+		$max      = isset( $resolved['baseSalary_max'] ) && is_numeric( $resolved['baseSalary_max'] ) ? (float) $resolved['baseSalary_max'] : null;
+		$currency = ! empty( $resolved['baseSalary_currency'] ) ? strtoupper( substr( (string) $resolved['baseSalary_currency'], 0, 3 ) ) : 'GBP';
+
+		if ( null !== $min || null !== $max ) {
+			$value = array(
+				'@type'    => 'QuantitativeValue',
+				'unitText' => 'YEAR',
+			);
+			if ( null !== $min && null !== $max && $min !== $max ) {
+				// Range
+				$value['minValue'] = $min;
+				$value['maxValue'] = $max;
+			} elseif ( null !== $min && null !== $max && $min === $max ) {
+				// Identical bounds: treat as fixed point
+				$value['value'] = $min;
+			} elseif ( null !== $min ) {
+				// "From X" with no upper bound: minValue alone
+				$value['minValue'] = $min;
+			} else {
+				// "Up to X": maxValue alone
+				$value['maxValue'] = $max;
+			}
+			return array(
+				'@type'    => 'MonetaryAmount',
+				'currency' => $currency,
+				'value'    => $value,
+			);
+		}
+
+		// Fall back to the legacy baseSalary (already a MonetaryAmount array via the transform).
+		if ( ! empty( $resolved['baseSalary'] ) && is_array( $resolved['baseSalary'] ) ) {
+			return $resolved['baseSalary'];
+		}
+		return null;
+	}
 
 	public static function transform_employment_type( $value ) {
 		if ( ! is_scalar( $value ) ) {
