@@ -145,12 +145,17 @@ class Schema_Mapper_JobPosting extends Schema_Mapper_Type {
 			}
 		}
 
-		$now              = current_time( 'timestamp', true );
 		$date_posted_iso  = $resolved['datePosted'];
-		$valid_through    = $resolved['validThrough'] ?? null;
-		if ( ! $valid_through ) {
-			$ts             = strtotime( $date_posted_iso );
-			$valid_through  = $ts ? gmdate( 'c', $ts + 30 * DAY_IN_SECONDS ) : gmdate( 'c', $now + 30 * DAY_IN_SECONDS );
+
+		// validThrough handling: Google requires this to be in the future when present.
+		// If unmapped, omit. If mapped but resolved to a past timestamp, omit so we don't
+		// emit a broken listing.
+		$valid_through = $resolved['validThrough'] ?? null;
+		if ( $valid_through ) {
+			$ts = strtotime( $valid_through );
+			if ( ! $ts || $ts < time() ) {
+				$valid_through = null;
+			}
 		}
 
 		$hiring_org = array(
@@ -185,7 +190,6 @@ class Schema_Mapper_JobPosting extends Schema_Mapper_Type {
 			'title'              => $resolved['title'],
 			'description'        => $resolved['description'],
 			'datePosted'         => $date_posted_iso,
-			'validThrough'       => $valid_through,
 			'employmentType'     => $resolved['employmentType'],
 			'hiringOrganization' => $hiring_org,
 			'jobLocation'        => $job_location,
@@ -197,6 +201,7 @@ class Schema_Mapper_JobPosting extends Schema_Mapper_Type {
 			),
 		);
 
+		if ( $valid_through )                            $schema['validThrough']    = $valid_through;
 		if ( ! empty( $resolved['baseSalary'] ) )       $schema['baseSalary']      = $resolved['baseSalary'];
 		if ( ! empty( $resolved['jobLocationType'] ) ) {
 			$schema['jobLocationType']                = $resolved['jobLocationType'];
