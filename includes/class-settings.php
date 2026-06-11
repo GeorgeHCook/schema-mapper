@@ -371,6 +371,36 @@ class Schema_Mapper_Settings {
 			</tr>
 		</table>
 
+		<h3><?php esc_html_e( 'Memberships', 'schema-mapper' ); ?></h3>
+		<p class="description">
+			<?php esc_html_e( 'Industry bodies the organization belongs to (e.g. REC, APSCo). Emitted as memberOf in JSON-LD. Leave any row blank to skip it.', 'schema-mapper' ); ?>
+		</p>
+		<table class="form-table widefat" role="presentation">
+			<thead>
+				<tr>
+					<th style="width:40%;"><?php esc_html_e( 'Organization name', 'schema-mapper' ); ?></th>
+					<th><?php esc_html_e( 'Website URL', 'schema-mapper' ); ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+				$memberships = isset( $org['memberships'] ) && is_array( $org['memberships'] ) ? array_values( $org['memberships'] ) : array();
+				// Always render at least 5 rows so the editor can add new entries
+				// without needing a "+ Add row" button (kept simple, no JS).
+				$row_count = max( 5, count( $memberships ) + 2 );
+				for ( $i = 0; $i < $row_count; $i++ ) :
+					$row  = $memberships[ $i ] ?? array();
+					$mname = $row['name'] ?? '';
+					$murl  = $row['url']  ?? '';
+				?>
+					<tr>
+						<td><input type="text" class="regular-text" name="<?php echo esc_attr( $option ); ?>[memberships][<?php echo (int) $i; ?>][name]" value="<?php echo esc_attr( $mname ); ?>" placeholder="<?php esc_attr_e( 'e.g. Recruitment & Employment Confederation', 'schema-mapper' ); ?>"></td>
+						<td><input type="url"  class="regular-text" name="<?php echo esc_attr( $option ); ?>[memberships][<?php echo (int) $i; ?>][url]"  value="<?php echo esc_attr( $murl ); ?>"  placeholder="https://www.rec.uk.com"></td>
+					</tr>
+				<?php endfor; ?>
+			</tbody>
+		</table>
+
 		<h3><?php esc_html_e( 'Opening hours', 'schema-mapper' ); ?></h3>
 		<table class="form-table" role="presentation">
 			<?php foreach ( $days as $day => $label ) :
@@ -763,6 +793,24 @@ class Schema_Mapper_Settings {
 			if ( $lines ) {
 				$clean[ $list_key ] = $lines;
 			}
+		}
+
+		// Memberships (repeater). Skip rows where either name or URL is missing.
+		$members_in    = isset( $raw['memberships'] ) && is_array( $raw['memberships'] ) ? $raw['memberships'] : array();
+		$members_clean = array();
+		foreach ( $members_in as $row ) {
+			if ( ! is_array( $row ) ) {
+				continue;
+			}
+			$mname = isset( $row['name'] ) ? sanitize_text_field( (string) $row['name'] ) : '';
+			$murl  = isset( $row['url'] )  ? esc_url_raw( (string) $row['url'] )           : '';
+			if ( $mname === '' && $murl === '' ) {
+				continue;
+			}
+			$members_clean[] = array( 'name' => $mname, 'url' => $murl );
+		}
+		if ( $members_clean ) {
+			$clean['memberships'] = $members_clean;
 		}
 
 		// Opening hours.

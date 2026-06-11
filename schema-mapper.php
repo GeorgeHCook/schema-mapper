@@ -3,7 +3,7 @@
  * Plugin Name:       Schema Mapper
  * Plugin URI:        https://github.com/GeorgeHCook/schema-mapper
  * Description:       Map ACF fields and post data to Schema.org structured data per post type. Outputs JSON-LD on the front end, and augments site-wide Organization schema with EmploymentAgency / LocalBusiness fields.
- * Version:           0.3.2
+ * Version:           0.3.3
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            George Cook
@@ -17,7 +17,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'SCHEMA_MAPPER_VERSION', '0.3.2' );
+define( 'SCHEMA_MAPPER_VERSION', '0.3.3' );
 define( 'SCHEMA_MAPPER_FILE', __FILE__ );
 define( 'SCHEMA_MAPPER_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SCHEMA_MAPPER_URL', plugin_dir_url( __FILE__ ) );

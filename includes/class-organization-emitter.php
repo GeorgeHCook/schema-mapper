@@ -148,6 +148,29 @@ class Schema_Mapper_Organization_Emitter {
 			$data['knowsAbout'] = array_values( $org['knows_about'] );
 		}
 
+		// Memberships -> memberOf (each member is its own Organization node).
+		if ( ! empty( $org['memberships'] ) && is_array( $org['memberships'] ) ) {
+			$members = array();
+			foreach ( $org['memberships'] as $m ) {
+				if ( ! is_array( $m ) ) {
+					continue;
+				}
+				$node = array( '@type' => 'Organization' );
+				if ( ! empty( $m['name'] ) ) {
+					$node['name'] = $m['name'];
+				}
+				if ( ! empty( $m['url'] ) ) {
+					$node['url'] = $m['url'];
+				}
+				if ( count( $node ) > 1 ) {
+					$members[] = $node;
+				}
+			}
+			if ( $members ) {
+				$data['memberOf'] = $members;
+			}
+		}
+
 		// Opening hours -> openingHoursSpecification.
 		if ( ! empty( $org['hours'] ) && is_array( $org['hours'] ) ) {
 			$specs = array();
