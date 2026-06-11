@@ -36,6 +36,7 @@ class Schema_Mapper {
 		}
 
 		new Schema_Mapper_Renderer( $this );
+		new Schema_Mapper_Organization_Emitter( $this );
 	}
 
 	private function register_schema_types() {
@@ -71,7 +72,20 @@ class Schema_Mapper {
 			$raw = array();
 		}
 		$raw['cpt_mappings'] = $raw['cpt_mappings'] ?? array();
+		$raw['organization'] = $raw['organization'] ?? array();
 		return $raw;
+	}
+
+	/**
+	 * Return the saved organization-level settings, or an empty array if none.
+	 * Used by the Yoast schema filter to augment the site's Organization graph
+	 * with EmploymentAgency / LocalBusiness fields entered through the UI.
+	 *
+	 * @return array
+	 */
+	public function get_organization_settings() {
+		$settings = $this->get_settings();
+		return is_array( $settings['organization'] ) ? $settings['organization'] : array();
 	}
 
 	/**

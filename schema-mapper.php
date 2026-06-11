@@ -2,8 +2,8 @@
 /**
  * Plugin Name:       Schema Mapper
  * Plugin URI:        https://github.com/GeorgeHCook/schema-mapper
- * Description:       Map ACF fields and post data to Schema.org structured data per post type. Outputs JSON-LD on the front end.
- * Version:           0.2.0
+ * Description:       Map ACF fields and post data to Schema.org structured data per post type. Outputs JSON-LD on the front end, and augments site-wide Organization schema with EmploymentAgency / LocalBusiness fields.
+ * Version:           0.3.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            George Cook
@@ -17,7 +17,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'SCHEMA_MAPPER_VERSION', '0.2.0' );
+define( 'SCHEMA_MAPPER_VERSION', '0.3.0' );
 define( 'SCHEMA_MAPPER_FILE', __FILE__ );
 define( 'SCHEMA_MAPPER_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SCHEMA_MAPPER_URL', plugin_dir_url( __FILE__ ) );
@@ -29,6 +29,7 @@ require_once SCHEMA_MAPPER_DIR . 'includes/class-field-resolver.php';
 require_once SCHEMA_MAPPER_DIR . 'includes/class-renderer.php';
 require_once SCHEMA_MAPPER_DIR . 'includes/class-settings.php';
 require_once SCHEMA_MAPPER_DIR . 'includes/class-metabox.php';
+require_once SCHEMA_MAPPER_DIR . 'includes/class-organization-emitter.php';
 require_once SCHEMA_MAPPER_DIR . 'includes/schemas/class-schema-type.php';
 require_once SCHEMA_MAPPER_DIR . 'includes/schemas/class-jobposting-schema.php';
 
