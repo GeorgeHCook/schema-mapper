@@ -92,7 +92,9 @@ class Schema_Mapper_Organization_Emitter {
 			$data['description'] = $org['description'];
 		}
 		if ( ! empty( $org['founded_year'] ) && empty( $data['foundingDate'] ) ) {
-			$data['foundingDate'] = (string) $org['founded_year'];
+			// Pad to YYYY-01-01: bare year is valid ISO 8601 but strict validators
+			// (incl. Google's Rich Results Test) expect a complete calendar date.
+			$data['foundingDate'] = sprintf( '%04d-01-01', (int) $org['founded_year'] );
 		}
 		if ( ! empty( $org['employees'] ) && empty( $data['numberOfEmployees'] ) ) {
 			$data['numberOfEmployees'] = $org['employees'];
