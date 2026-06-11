@@ -19,6 +19,9 @@ class Schema_Mapper {
 	 */
 	private $schema_types = array();
 
+	/** @var Schema_Mapper_Organization_Emitter|null */
+	private $org_emitter;
+
 	public static function instance() {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
@@ -36,7 +39,14 @@ class Schema_Mapper {
 		}
 
 		new Schema_Mapper_Renderer( $this );
-		new Schema_Mapper_Organization_Emitter( $this );
+		$this->org_emitter = new Schema_Mapper_Organization_Emitter( $this );
+	}
+
+	/**
+	 * @return Schema_Mapper_Organization_Emitter
+	 */
+	public function organization_emitter() {
+		return $this->org_emitter;
 	}
 
 	private function register_schema_types() {

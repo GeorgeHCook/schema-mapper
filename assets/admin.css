@@ -102,3 +102,51 @@ table.schema-mapper-fields-table tr.is-missing-required td { background: #fcf0f1
 	font-size: 11px;
 }
 
+/* ------------------------------------------------------------------------
+ * Organization tab: live JSON-LD preview
+ * --------------------------------------------------------------------- */
+.schema-mapper-org-preview {
+	margin: 1.5em 0 2em;
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+}
+
+.schema-mapper-org-preview > details > summary {
+	padding: 12px 16px;
+	cursor: pointer;
+	list-style: revert;
+	background: #f6f7f7;
+	border-radius: 4px 4px 0 0;
+}
+
+.schema-mapper-org-preview > details[open] > summary {
+	border-bottom: 1px solid #c3c4c7;
+}
+
+.schema-mapper-org-preview > details > summary strong {
+	font-size: 14px;
+}
+
+.schema-mapper-org-preview > details > summary .description {
+	display: inline-block;
+	margin-left: 8px;
+	color: #50575e;
+	font-weight: normal;
+	font-size: 12px;
+}
+
+.schema-mapper-preview-code {
+	margin: 0;
+	padding: 16px 18px;
+	background: #1d2327;
+	color: #f0f0f1;
+	border-radius: 0 0 4px 4px;
+	overflow: auto;
+	max-height: 480px;
+	font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace;
+	font-size: 12.5px;
+	line-height: 1.55;
+	white-space: pre;
+}
+

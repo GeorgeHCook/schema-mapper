@@ -162,6 +162,28 @@ class Schema_Mapper_Settings {
 	private function render_organization_tab( $org ) {
 		$option = SCHEMA_MAPPER_OPTION . '[organization]';
 
+		// Preview: render the JSON-LD that will actually emit on the front end,
+		// based on the last saved settings. Empty fields don't appear.
+		$emitter = $this->plugin->organization_emitter();
+		$preview = $emitter ? $emitter->preview() : null;
+		?>
+		<div class="schema-mapper-org-preview">
+			<details<?php echo $preview ? ' open' : ''; ?>>
+				<summary>
+					<strong><?php esc_html_e( 'Preview: this is what gets emitted to JSON-LD on every page', 'schema-mapper' ); ?></strong>
+					<span class="description"><?php esc_html_e( 'Reflects last saved values. Empty fields are not output.', 'schema-mapper' ); ?></span>
+				</summary>
+				<?php if ( $preview ) : ?>
+					<pre class="schema-mapper-preview-code"><?php
+						echo esc_html( wp_json_encode( $preview, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) );
+					?></pre>
+				<?php else : ?>
+					<p class="description"><?php esc_html_e( 'No organization settings saved yet. Fill the fields below, save, and the preview will appear here.', 'schema-mapper' ); ?></p>
+				<?php endif; ?>
+			</details>
+		</div>
+		<?php
+
 		$enabled       = ! empty( $org['enabled'] );
 		$types         = isset( $org['types'] ) && is_array( $org['types'] ) ? $org['types'] : array( 'EmploymentAgency' );
 

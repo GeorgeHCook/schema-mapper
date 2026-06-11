@@ -21,6 +21,41 @@ class Schema_Mapper_Organization_Emitter {
 	}
 
 	/**
+	 * Build a representative copy of the Organization graph node that will
+	 * actually be emitted on the front-end, for the admin preview pane.
+	 *
+	 * Reconstructs the base node from Yoast / site settings the same way Yoast
+	 * does, then runs it through {@see augment()}. Output is identical to what
+	 * lands in JSON-LD on real pages, so the editor sees exactly what Google
+	 * will see.
+	 *
+	 * @return array
+	 */
+	public function preview() {
+		$yoast      = is_array( get_option( 'wpseo_titles' ) ) ? get_option( 'wpseo_titles' ) : array();
+		$home       = trailingslashit( home_url( '/' ) );
+		$company    = ! empty( $yoast['company_name'] ) ? $yoast['company_name'] : get_bloginfo( 'name' );
+		$logo_url   = $yoast['company_logo'] ?? '';
+
+		$base = array(
+			'@type' => array( 'Organization' ),
+			'@id'   => $home . '#organization',
+			'name'  => $company,
+			'url'   => $home,
+		);
+		if ( $logo_url ) {
+			$base['logo'] = array(
+				'@type' => 'ImageObject',
+				'@id'   => $home . '#/schema/logo/image/',
+				'url'   => $logo_url,
+			);
+			$base['image'] = array( '@id' => $home . '#/schema/logo/image/' );
+		}
+
+		return $this->augment( $base );
+	}
+
+	/**
 	 * @param array $data The Organization graph node Yoast is about to emit.
 	 * @return array
 	 */
